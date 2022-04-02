@@ -4,7 +4,8 @@ from PIL import Image,ImageTk
 from tkinter import messagebox
 import sqlite3
 
-def main():
+def start_login(win):
+    win.destroy()
     win=Tk()
     app=login_window(win)
     win.mainloop()
@@ -19,8 +20,7 @@ class login_window:
          self.var_securityq=StringVar()
          self.var_securityA=StringVar()
          self.var_new_password=StringVar()
-
-         self.bg=ImageTk.PhotoImage(file=r"C:\Users\bhakt\Downloads\hotel images\hotel_i2.jpg")
+         self.bg=ImageTk.PhotoImage(file=r"C:\Users\bhakt\Downloads\hotel images\hotel_i2.png")
          lbl_bg=Label(self.root,image=self.bg)
          lbl_bg.place(x=0,y=0,relwidth=1,relheight=1)
 
@@ -38,10 +38,10 @@ class login_window:
          get_str=Label(self.root,text="Get Started",font=("Times New Roman",25,"bold"),fg="white",bg="black")
          get_str.place(x=700,y=280)
 
-         email=lbl=Label(self.root,text="Enter your email",font=("Times New Roman",15,"bold"),fg="white",bg="black")
-         email.place(x=630,y=330)
-         self.txt_email=ttk.Entry(self.root,font=("Times New Roman",15,"bold"))
-         self.txt_email.place(x=600,y=360,width=300)
+         username=lbl=Label(self.root,text="Username",font=("Times New Roman",16,"bold"),fg="white",bg="black")
+         username.place(x=630,y=330)
+         self.txt_username=ttk.Entry(self.root,font=("Times New Roman",15,"bold",))
+         self.txt_username.place(x=600,y=360,width=300)
 
          password=lbl=Label(self.root,text="Password",font=("Times New Roman",15,"bold"),fg="white",bg="black")
          password.place(x=630,y=400)
@@ -70,22 +70,26 @@ class login_window:
          forgotpassbtn.place(x=600,y=550,height=15)
 
      def register_window(self):
-         self.new_window=Toplevel(self.root)
-         self.app=register(self.new_window)
+         for x in self.root.winfo_children():
+             x.destroy()
+        #  self.root.destroy()
+        #  self.root = Tk()
+        #  self.new_window=Toplevel(self.root)
+         self.app=register(self.root)
     
      
 
 
      def login(self):
          print("function called")
-         if (self.txt_email.get()=="" or self.txt_pass.get()==""):
+         if (self.txt_username.get()=="" or self.txt_pass.get()==""):
              messagebox.showerror("error","All feilds required")
              print("abc")
          else:
              conn= sqlite3.connect('hotel_management.db')
              cursor = conn.cursor()
-             query = 'select * from manager where email=? and password=?;'
-             cursor.execute(query,[self.txt_email.get(),self.txt_pass.get()])
+             query = 'select * from manager where username=? and password=?;'
+             cursor.execute(query,[self.txt_username.get(),self.txt_pass.get()])
              result = cursor.fetchone()
             
              if result==None:
@@ -103,25 +107,24 @@ class login_window:
      
      def reset_Pass(self):
          if self.combo_securityq.get()=="Select":
-             
              messagebox.showerror("Error","Please select the security question")
              print("self")
-         elif self.txt.securityA.get()=="":
+         elif self.txt_securityA.get()=="":
              messagebox.showerror("Error","Please enter the security answer")
-         elif self.txt.new_password.get()=="":
+         elif self.txt_new_password.get()=="":
              messagebox.showerror("Error","Please enter the new password")
          else:
              conn= sqlite3.connect('hotel_management.db')
              cursor = conn.cursor()
-             query = 'select * from manager where email=? and sec_Q=? and sec_A=?;'
-             cursor.execute(query,[self.txt_email.get(),self.combo_securityq.get(),self.txt_securityA.get()])
+             query = 'select * from manager where username=? and sec_Q=? and sec_A=?;'
+             cursor.execute(query,[self.txt_username.get(),self.combo_securityq.get(),self.txt_securityA.get()])
              result = cursor.fetchone()
 
              if result==None:
                 messagebox.showerror("Error","Please enter correct answer")
              else:
-                 query=("update manager set password=? where email=?")
-                 cursor.execute(query,[self.txt_new_password.get(),self.var_username.get()])
+                 query=("update manager set password=? where username=?")
+                 cursor.execute(query,[self.txt_new_password.get(),self.txt_username.get()])
                  conn.commit()
                  conn.close()
                  messagebox.showinfo("Info","Your password has been reset,please login with new password")
@@ -133,14 +136,14 @@ class login_window:
 
 
      def forgot_password_window(self):
-         if self.txt_email.get()=="":
-             messagebox.showerror("Error","Please enter the email address to reset password")  
+         if self.txt_username.get()=="":
+             messagebox.showerror("Error","Please enter the username to reset password")  
          else:
              conn= sqlite3.connect('hotel_management.db')
              cursor = conn.cursor()
              print("cursor")
-             query = 'select * from manager where email=?;'
-             cursor.execute(query,[self.txt_email.get()])
+             query = 'select * from manager where username=?;'
+             cursor.execute(query,[self.txt_username.get()])
              result = cursor.fetchone()
 
              if result==None:
@@ -170,7 +173,7 @@ class login_window:
                 self.txt_new_password=ttk.Entry(self.root2,textvariable=self.var_new_password,font=("Times New Roman",15,"bold",))
                 self.txt_new_password.place(x=50,y=360,width=250)
 
-                btn=Button(self.root2,text="Reset Password",font=("Times New Roman",16,"bold"),fg="Yellow",bg="red")
+                btn=Button(self.root2,text="Reset Password",command=self.reset_Pass,font=("Times New Roman",16,"bold"),fg="Yellow",bg="red")
                 btn.place(x=140,y=410)
 
                 
@@ -284,11 +287,11 @@ class register:
          i3=Image.open(r"C:\Users\bhakt\Downloads\hotel images\login.png")
          i3=i3.resize((130,45),Image.ANTIALIAS)
          self.photoimage3=ImageTk.PhotoImage(i3)
-         b2=Button(image=self.photoimage3,bg="black",borderwidth=0,cursor="hand2",font=("Times New Roman",45,"bold"))
+         b2=Button(image=self.photoimage3,bg="black",borderwidth=0,cursor="hand2",font=("Times New Roman",45,"bold"),command=lambda: start_login(self.root))
          b2.place(x=700,y=710,width=130)
 
      def register_data(self):
-         if self.var_name.get()=="" or self.var_aadhar.get()=="" or self.var_password.get=="":
+         if self.var_name.get()=="" or self.var_aadhar.get()=="" or self.var_password.get()=="":
              messagebox.showerror("Error","All Fields Are Required")
          elif self.var_password.get()!=self.var_conf_password.get():
              messagebox.showerror("Error","Password and Confirm Password must be same") 
@@ -309,7 +312,7 @@ class register:
                      print("entered else")
                      cursor.execute("insert into manager(name,gender,phone,email,aadhar,DOB,shift,sec_Q,sec_A,username,password) values(?,?,?,?,?,?,?,?,?,?,?);",(self.var_name.get(),
                      self.var_gender.get(),self.var_mobile.get(),self.var_email.get(),self.var_aadhar.get(),self.var_DOB.get(),
-                     self.var_shift.get(),self.var_securityq.get(),self.var_securityA.get(),self.var_username(),
+                     self.var_shift.get(),self.var_securityq.get(),self.var_securityA.get(),self.var_username.get(),
                      self.var_password.get()))
                      messagebox.showinfo("Success","Register Successfully")
                  conn.commit()
@@ -323,5 +326,5 @@ class register:
 
 
 
-if __name__ =="__main__":
-    main()
+# if __name__ =="__main__":
+#     start_login()

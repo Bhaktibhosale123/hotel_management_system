@@ -108,17 +108,17 @@ class register:
          i2=Image.open(r"C:\Users\bhakt\Downloads\hotel images\register_now.png")
          i2=i2.resize((130,50),Image.ANTIALIAS)
          self.photoimage2=ImageTk.PhotoImage(i2)
-         b1=Button(image=self.photoimage2,bg="black",command=self.register_data,borderwidth=0,cursor="hand2",font=("Times New Roman",50,"bold"))
+         b1=Button(image=self.photoimage2,bg="black",command=self.register_data(),borderwidth=0,cursor="hand2",font=("Times New Roman",50,"bold"))
          b1.place(x=480,y=710,width=130)
 
          i3=Image.open(r"C:\Users\bhakt\Downloads\hotel images\login.png")
          i3=i3.resize((130,45),Image.ANTIALIAS)
          self.photoimage3=ImageTk.PhotoImage(i3)
-         b2=Button(image=self.photoimage3,bg="black",borderwidth=0,cursor="hand2",font=("Times New Roman",45,"bold"))
+         b2=Button(image=self.photoimage3,bg="black",command=self.login_window,borderwidth=0,cursor="hand2",font=("Times New Roman",45,"bold"))
          b2.place(x=700,y=710,width=130)
 
      def register_data(self):
-         if self.var_name.get()=="" or self.var_aadhar.get()=="" or self.var_password.get=="":
+         if self.var_name.get()=="" or self.var_aadhar.get()=="" or self.var_password.get()=="":
              messagebox.showerror("Error","All Fields Are Required")
          elif self.var_password.get()!=self.var_conf_password.get():
              messagebox.showerror("Error","Password and Confirm Password must be same") 
